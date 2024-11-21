@@ -15,14 +15,15 @@ def create_question_tables(data):
 
         # Add metadata rows
         rows = [
-            ("Grade", str(question["Grade"])),
-            ("Domain", question["Domain"]),
-            ("Standard/Core Concept", question["Standard/Core Concept"]),
-            ("Question Type", question["Question Type"]),
-            ("Difficulty Level", question["Difficulty Level"]),
-            ("Cognitive Dimension (Bloom's Level)", question["Cognitive Dimension (Bloom's Level)"] ),
-            ("Question ID", question["Question ID"]),
-            ("Title (Stem and Prompt)", question["Title (Stem and Prompt)"])
+            ("LU", question.get("LU", "N/A")),
+            ("LUID", question.get("LUID", "N/A")),
+            ("LO", question.get("LO", "N/A")),
+            ("LOID", question.get("LOID", "N/A")),
+            ("Question Type", question.get("Question Type", "N/A")),
+            ("Difficulty Level", question.get("Difficulty Level", "N/A")),
+            ("Cognitive Dimension (Bloom's Level)", question.get("Cognitive Dimension (Bloom’s Level)", "N/A")),
+            ("Question ID", question.get("Question ID", "N/A")),
+            ("Title (Stem and Prompt)", question.get("Title (Stem and Prompt)", "N/A")),
         ]
 
         for category, detail in rows:
@@ -42,7 +43,7 @@ def create_question_tables(data):
         hdr_cells[3].text = "Distractor Rationale"
 
         # Add options rows
-        for option in question["Options"]:
+        for option in question.get("Options", []):
             row = options_table.add_row()
             row.cells[0].text = option.get("Option", "N/A")
             row.cells[1].text = option.get("Text", "N/A")
@@ -55,8 +56,8 @@ def create_question_tables(data):
 
         # Add bottom rows
         bottom_rows = [
-            ("Hint", question["Hint"]),
-            ("Solution", question["Solution"])
+            ("Hint", question.get("Hint", "N/A")),
+            ("Solution", question.get("Solution", "N/A"))
         ]
 
         for category, detail in bottom_rows:
@@ -92,6 +93,13 @@ def main():
             # Parse JSON input
             data = json.loads(json_input)
 
+            # Validate data structure
+            if not isinstance(data, list):
+                raise ValueError("Input JSON must be a list of questions.")
+            for question in data:
+                if "Options" not in question or not isinstance(question["Options"], list):
+                    raise ValueError("Each question must contain an 'Options' field with a list of options.")
+
             # Create document
             file_stream = create_question_tables(data)
 
@@ -99,6 +107,8 @@ def main():
             st.success("Document generated successfully!")
             download_link = create_download_link(file_stream, "Generated_Questions.docx")
             st.markdown(download_link, unsafe_allow_html=True)
+        except json.JSONDecodeError:
+            st.error("Invalid JSON format. Please check your input.")
         except Exception as e:
             st.error(f"Error: {str(e)}")
 
