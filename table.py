@@ -21,7 +21,7 @@ def create_question_tables(data):
             ("LOID", question.get("LOID", "N/A")),
             ("Question Type", question.get("Question Type", "N/A")),
             ("Difficulty Level", question.get("Difficulty Level", "N/A")),
-            ("Cognitive Dimension (Bloom's Level)", question.get("Cognitive Dimension (Bloom’s Level)", "N/A")),
+            ("Cognitive Dimension (Bloom's Level)", question.get("Cognitive Dimension (Bloom's Level)", "N/A")),
             ("Question ID", question.get("Question ID", "N/A")),
             ("Title (Stem and Prompt)", question.get("Title (Stem and Prompt)", "N/A")),
         ]
